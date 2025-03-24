@@ -1,0 +1,99 @@
+@startuml CarController
+
+title Car Controller UML Diagram
+
+' Define stereotypes
+skinparam classAttributeIconSize 0
+skinparam stereotypeCBackgroundColor #A9DCDF
+
+' Models
+package "Models" {
+  class Car {
+    +_id: ObjectId
+    +provider_id: ObjectId
+    +manufactureDate: Date
+    +populate(field)
+    +countDocuments(query)
+    +findById(id)
+    +create(data)
+    +findByIdAndUpdate(id, data, options)
+    +deleteOne(query)
+  }
+  
+  class car_provider {
+    +_id: ObjectId
+    +name: String
+    +address: String
+    +telephone_number: String
+    +findById(id)
+  }
+
+  class Rent {
+    +_id: ObjectId
+    +car: ObjectId
+    +deleteMany(query)
+  }
+}
+
+' Controllers
+package "Controllers" {
+  class CarController {
+    +getCars(req, res, next)
+    +getCar(req, res, next)
+    +createCar(req, res, next)
+    +updateCar(req, res, next)
+    +deleteCar(req, res, next)
+  }
+}
+
+' REST Endpoints
+package "API Endpoints" {
+  class "GET /api/v1/cars" as getAllCars <<Resource>>
+  class "GET /api/v1/cars/:id" as getOneCar <<Resource>>
+  class "POST /api/v1/cars" as createCarAPI <<Resource>>
+  class "PUT /api/v1/cars/:id" as updateCarAPI <<Resource>>
+  class "DELETE /api/v1/cars/:id" as deleteCarAPI <<Resource>>
+}
+
+' Relationships
+CarController --> Car : uses
+CarController --> car_provider : uses
+CarController --> Rent : uses
+
+getAllCars --> CarController : mapped to getCars
+getOneCar --> CarController : mapped to getCar
+createCarAPI --> CarController : mapped to createCar
+updateCarAPI --> CarController : mapped to updateCar
+deleteCarAPI --> CarController : mapped to deleteCar
+
+note bottom of getAllCars
+  Access: Public
+  Returns all cars with filtering, 
+  sorting, pagination and population
+end note
+
+note bottom of getOneCar
+  Access: Public
+  Returns single car with 
+  provider and rents data
+end note
+
+note bottom of createCarAPI
+  Access: Private
+  Creates a new car with 
+  provider validation
+end note
+
+note bottom of updateCarAPI
+  Access: Private
+  Updates an existing car
+  with provider validation
+end note
+
+note bottom of deleteCarAPI
+  Access: Private
+  Deletes a car and all
+  associated rent records
+end note
+
+@enduml

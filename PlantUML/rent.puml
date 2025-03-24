@@ -1,0 +1,147 @@
+@startuml RentController
+
+title Rent Controller UML Diagram
+
+' Define stereotypes
+skinparam classAttributeIconSize 0
+skinparam stereotypeCBackgroundColor #A9DCDF
+
+' Models
+package "Models" {
+  class Rent {
+    +_id: ObjectId
+    +user: ObjectId
+    +car: ObjectId
+    +startDate: Date
+    +returnDate: Date
+    +actualReturnDate: Date
+    +price: Number
+    +status: String
+    +find(query)
+    +findById(id)
+    +findOne(query)
+    +create(data)
+    +findByIdAndUpdate(id, data, options)
+    +deleteOne()
+  }
+  
+  class Car {
+    +_id: ObjectId
+    +license_plate: String
+    +brand: String
+    +model: String
+    +color: String
+    +type: String
+    +manufactureDate: Date
+    +available: Boolean
+    +dailyRate: Number
+    +tier: Number
+    +provider_id: ObjectId
+    +findById(id)
+    +findByIdAndUpdate(id, data)
+  }
+
+  class User {
+    +_id: ObjectId
+    +tier: Number
+    +total_spend: Number
+    +role: String
+    +findById(id)
+    +save()
+  }
+}
+
+' Middleware
+package "Middleware" {
+  class asyncHandler {
+    +wrapper(fn)
+  }
+}
+
+' Controllers
+package "Controllers" {
+  class RentController {
+    +getRents(req, res, next)
+    +getRent(req, res, next)
+    +addRent(req, res, next)
+    +updateRent(req, res, next)
+    +deleteRent(req, res, next)
+    +completeRent(req, res, next)
+    +confirmRent(req, res, next)
+  }
+}
+
+' REST Endpoints
+package "API Endpoints" {
+  class "GET /api/v1/rents" as getAllRents <<Resource>>
+  class "GET /api/v1/rents/:id" as getOneRent <<Resource>>
+  class "POST /api/v1/rents" as createRentAPI <<Resource>>
+  class "PUT /api/v1/rents/:id" as updateRentAPI <<Resource>>
+  class "DELETE /api/v1/rents/:id" as deleteRentAPI <<Resource>>
+  class "PUT /api/v1/rents/:id/complete" as completeRentAPI <<Resource>>
+  class "PUT /api/v1/rents/:id/confirm" as confirmRentAPI <<Resource>>
+}
+
+' Relationships
+RentController --> Rent : uses
+RentController --> Car : uses
+RentController --> User : uses
+RentController ..> asyncHandler : wrapped by
+
+getAllRents --> RentController : mapped to getRents
+getOneRent --> RentController : mapped to getRent
+createRentAPI --> RentController : mapped to addRent
+updateRentAPI --> RentController : mapped to updateRent
+deleteRentAPI --> RentController : mapped to deleteRent
+completeRentAPI --> RentController : mapped to completeRent
+confirmRentAPI --> RentController : mapped to confirmRent
+
+note bottom of getAllRents
+  Access: Private
+  Returns all rents with
+  role-based filtering
+end note
+
+note bottom of getOneRent
+  Access: Private
+  Returns single rent with
+  car details
+end note
+
+note bottom of createRentAPI
+  Access: Private
+  Creates a new rent with validation:
+  - Max 3 active rentals per user
+  - Car availability check
+  - User tier qualification
+  - Date validation
+end note
+
+note bottom of updateRentAPI
+  Access: Private
+  Updates an existing rent
+  with authorization check
+end note
+
+note bottom of deleteRentAPI
+  Access: Private
+  Deletes a rent with
+  authorization check
+end note
+
+note bottom of completeRentAPI
+  Access: Private
+  Completes a rent:
+  - Updates car availability
+  - Calculates late fees
+  - Updates user total_spend
+end note
+
+note bottom of confirmRentAPI
+  Access: Private/Admin
+  Confirms a pending rent:
+  - Changes status to active
+  - Updates car availability
+end note
+
+@enduml

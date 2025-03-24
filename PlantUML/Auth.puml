@@ -1,0 +1,81 @@
+@startuml AuthController
+
+title Auth Controller UML Diagram
+
+' Define stereotypes
+skinparam classAttributeIconSize 0
+skinparam stereotypeCBackgroundColor #A9DCDF
+
+' Models
+package "Models" {
+  class User {
+    +getSignedJwtToken()
+    +matchPassword(password)
+  }
+  
+  class ValidToken {
+    +token: String
+    +expiresAt: Date
+  }
+}
+
+' Controllers
+package "Controllers" {
+  class AuthController {
+    +register(req, res, next)
+    +login(req, res, next)
+    +getCurrentUser(req, res, next)
+    +logout(req, res, next)
+    -sendTokenResponse(user, statusCode, res)
+  }
+}
+
+' Routes 
+package "Routes" {
+  class AuthRoutes
+}
+
+' REST Endpoints
+package "API Endpoints" {
+  class "POST /api/v1/auth/register" as register <<REST>>
+  class "POST /api/v1/auth/login" as login <<REST>>
+  class "GET /api/v1/auth/curuser" as curuser <<REST>>
+  class "GET /api/v1/auth/logout" as logout <<REST>>
+}
+
+' Relationships
+AuthController --> User : uses
+AuthController --> ValidToken : creates/deletes
+AuthRoutes --> AuthController : routes to
+
+register --> AuthController : mapped to
+login --> AuthController : mapped to
+curuser --> AuthController : mapped to
+logout --> AuthController : mapped to
+
+note bottom of register
+  Access: Public
+  Creates a new user
+end note
+
+note bottom of login
+  Access: Public
+  Authenticates user and returns token
+end note
+
+note bottom of curuser
+  Access: Private
+  Returns current user details
+end note
+
+note bottom of logout
+  Access: Private
+  Invalidates token and logs out user
+end note
+
+note right of AuthController::sendTokenResponse
+  Helper method to create JWT token,
+  store it in cookies and database
+end note
+
+@enduml

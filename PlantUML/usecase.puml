@@ -1,0 +1,124 @@
+@startuml Car_Rental_System_Use_Cases
+
+' Use left to right direction for better layout
+left to right direction
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+skinparam usecaseStyle roundbox
+skinparam linetype ortho
+
+' Actors
+:User: as USER #LightBlue
+:Admin: as ADMIN #LightGreen
+:Car Provider: as PROVIDER #LightYellow
+:Payment Processor: as PAYMENT #LightPink
+
+' Define system boundary
+rectangle "Car Rental System" {
+    ' Authentication subsystem
+    package "Authentication System" {
+        usecase "Register User" as UC1
+        usecase "Login" as UC2
+        usecase "Logout" as UC3
+        usecase "Get User Profile" as UC4
+    }
+    
+    ' Car Management subsystem
+    package "Car Management System" {
+        usecase "View All Cars" as UC5
+        usecase "View Car Details" as UC6
+        usecase "Add New Car" as UC7
+        usecase "Update Car Information" as UC8
+        usecase "Delete Car" as UC9
+        usecase "Filter Cars by Provider" as UC10
+    }
+    
+    ' Rental Management subsystem
+    package "Rental Management System" {
+        usecase "Create Rental Request" as UC11
+        usecase "View My Rentals" as UC12
+        usecase "Complete Rental" as UC13
+        usecase "Confirm Rental Request" as UC14
+        usecase "Calculate Late Fees" as UC15
+    }
+    
+    ' Provider Management subsystem
+    package "Provider Management System" {
+        usecase "View All Providers" as UC16
+        usecase "View Provider Details" as UC17
+        usecase "Add New Provider" as UC18
+        usecase "Update Provider Information" as UC19
+    }
+    
+    ' Payment subsystem
+    package "Payment System" {
+        usecase "Process Payment" as UC20
+        usecase "Update User Spend" as UC21
+    }
+}
+
+' User relations - Group similar actions
+USER --> UC1
+USER --> UC2
+USER --> UC3
+USER --> UC4
+
+USER --> UC5
+USER --> UC6
+USER --> UC10
+
+USER --> UC11
+USER --> UC12
+USER --> UC13
+
+USER --> UC16
+USER --> UC17
+USER --> UC20
+
+' Admin relations - Group by system access
+ADMIN --> UC2
+ADMIN --> UC3
+ADMIN --> UC4
+
+ADMIN ---> UC7
+ADMIN ---> UC8
+ADMIN ---> UC9
+ADMIN --> UC5
+ADMIN --> UC6
+ADMIN --> UC10
+
+ADMIN ---> UC14
+ADMIN --> UC11
+ADMIN --> UC12
+ADMIN --> UC13
+ADMIN ---> UC15
+
+ADMIN ---> UC18
+ADMIN ---> UC19
+ADMIN --> UC16
+ADMIN --> UC17
+
+' Car Provider (as passive entity, not an active user)
+' No direct system interactions - Provider is now just referenced by the system
+
+' Payment processor relations
+PAYMENT -up-> UC20
+
+' Include relationships - Using different line style
+UC11 ..> UC6 : <<include>>
+UC11 ..> UC20 : <<include>>
+UC13 ..> UC15 : <<include>>
+UC13 ..> UC21 : <<include>>
+UC7 ..> UC17 : <<include>>
+
+' Extend relationships - Using different line style
+UC14 .> UC11 : <<extend>>
+UC15 .> UC13 : <<extend>>
+
+note bottom of PROVIDER
+  Car Provider is not an active user of the system.
+  It's a data entity containing name, address, 
+  and contact information managed by the Admin.
+end note
+
+@enduml

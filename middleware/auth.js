@@ -31,14 +31,18 @@ exports.protect = async (req, res, next) => {
     }
 };
 
-exports.authorize=(...roles)=>{
-    return (req,res,next)=>{
-        if(!roles.includes(req.user.role)){
-            return res.status(403).json({seccess:false,massage:`User role ${req.user.role} is not authorized to access this route`});
+exports.authorize = (...roles) => {
+    return (req, res, next) => {
+        if (!roles.includes(req.user.role)) {
+            return res.status(403).json({
+                success: false,
+                message: `User role is not authorized to access this route`
+            });
         }
         next();
-    }
-}
+    };
+};
+
 
 //grant access to specific roles
 exports.authorize=(...roles)=>{
@@ -46,7 +50,7 @@ exports.authorize=(...roles)=>{
         if(!roles.includes(req.user.role)){
             return res.status(403).json({
                 success:false,
-                message:'User role ${req.user.role} is not authorized to acess this route'
+                message:'User role is not authorized to acess this route'
             });
         }
         next();

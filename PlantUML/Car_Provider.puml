@@ -1,0 +1,85 @@
+@startuml CarProviderController
+
+title Car Provider Controller UML Diagram
+
+' Define stereotypes
+skinparam classAttributeIconSize 0
+skinparam stereotypeCBackgroundColor #A9DCDF
+
+' Models
+package "Models" {
+  class Car_Provider {
+    +_id: ObjectId
+    +toObject()
+  }
+  
+  class Car {
+    +_id: ObjectId
+    +provider_id: ObjectId
+  }
+}
+
+' Middleware
+package "Middleware" {
+  class asyncHandler {
+    +wrapper(fn)
+  }
+}
+
+' Controllers
+package "Controllers" {
+  class CarProviderController {
+    +getCarProviders(req, res)
+    +getCarProvider(req, res)
+    +createCarProvider(req, res)
+    +updateCarProvider(req, res)
+    +deleteCarProvider(req, res)
+  }
+}
+
+' REST Endpoints
+package "API Endpoints" {
+  class "GET /api/providers" as getAll <<Resource>>
+  class "GET /api/providers/:id" as getOne <<Resource>>
+  class "POST /api/providers" as create <<Resource>>
+  class "PUT /api/providers/:id" as update <<Resource>>
+  class "DELETE /api/providers/:id" as delete <<Resource>>
+}
+
+' Relationships
+CarProviderController --> Car_Provider : uses
+CarProviderController --> Car : uses
+CarProviderController ..> asyncHandler : wrapped by
+
+getAll --> CarProviderController : mapped to getCarProviders
+getOne --> CarProviderController : mapped to getCarProvider
+create --> CarProviderController : mapped to createCarProvider
+update --> CarProviderController : mapped to updateCarProvider
+delete --> CarProviderController : mapped to deleteCarProvider
+
+note bottom of getAll
+  Access: Public
+  Returns all car providers
+end note
+
+note bottom of getOne
+  Access: Public
+  Returns single car provider with its cars
+end note
+
+note bottom of create
+  Access: Private
+  Creates a new car provider
+end note
+
+note bottom of update
+  Access: Private
+  Updates an existing car provider
+end note
+
+note bottom of delete
+  Access: Private
+  Deletes a car provider
+end note
+
+@enduml

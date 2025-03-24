@@ -1,0 +1,207 @@
+@startuml
+
+actor User
+participant "Express Server" as Server
+participant "Auth Controller" as AuthC
+participant "User Model" as UserM
+participant "Car Controller" as CarC
+participant "Car Model" as CarM
+participant "Rent Controller" as RentC
+participant "Rent Model" as RentM
+participant "Car Provider Controller" as CPC
+participant "Car Provider Model" as CPM
+participant "Database" as DB
+== Authentication ==
+User -> Server: POST /api/v1/auth/register
+Server -> AuthC: registerUser()
+AuthC -> UserM: createUser()
+UserM -> DB: Insert User Data
+DB --> UserM: User Created
+UserM --> AuthC: User Created
+AuthC --> Server: Success Response
+Server --> User: Registration Successful
+
+User -> Server: POST /api/v1/auth/login
+Server -> AuthC: loginUser()
+AuthC -> UserM: validateCredentials()
+UserM -> DB: Query User Data
+DB --> UserM: User Data
+UserM --> AuthC: User Data
+AuthC --> Server: Auth Token
+Server --> User: Login Successful
+== User Management ==
+User -> Server: GET /api/v1/users
+Server -> AuthC: getAllUsers()
+AuthC -> UserM: fetchAllUsers()
+UserM -> DB: Retrieve Users Data
+DB --> UserM: Users Data
+UserM --> AuthC: Users Data
+AuthC --> Server: Users Data
+Server --> User: Users List
+
+User -> Server: GET /api/v1/users/:id
+Server -> AuthC: getUser()
+AuthC -> UserM: fetchUser()
+UserM -> DB: Query User Data
+DB --> UserM: User Data
+UserM --> AuthC: User Data
+AuthC --> Server: User Data
+Server --> User: User Info
+
+User -> Server: PUT /api/v1/users/:id
+Server -> AuthC: updateUser()
+AuthC -> UserM: modifyUser()
+UserM -> DB: Update User Data
+DB --> UserM: User Updated
+UserM --> AuthC: User Updated
+AuthC --> Server: Success Response
+Server --> User: User Updated
+
+User -> Server: DELETE /api/v1/users/:id
+Server -> AuthC: deleteUser()
+AuthC -> UserM: removeUser()
+UserM -> DB: Delete User Data
+DB --> UserM: User Deleted
+UserM --> AuthC: User Deleted
+AuthC --> Server: Success Response
+Server --> User: User Deleted
+== Car Management ==
+User -> Server: POST /api/v1/cars
+Server -> CarC: createCar()
+CarC -> CarM: saveCar()
+CarM -> DB: Insert Car Data
+DB --> CarM: Car Created
+CarM --> CarC: Car Created
+CarC --> Server: Success Response
+Server --> User: Car Added
+
+User -> Server: GET /api/v1/cars
+Server -> CarC: getAllCars()
+CarC -> CarM: fetchAllCars()
+CarM -> DB: Retrieve Cars Data
+DB --> CarM: Cars Data
+CarM --> CarC: Cars Data
+CarC --> Server: Cars Data
+Server --> User: Cars List
+
+User -> Server: GET /api/v1/cars/:id
+Server -> CarC: getCar()
+CarC -> CarM: fetchCar()
+CarM -> DB: Query Car Data
+DB --> CarM: Car Data
+CarM --> CarC: Car Data
+CarC --> Server: Car Data
+Server --> User: Car Info
+
+User -> Server: PUT /api/v1/cars/:id
+Server -> CarC: updateCar()
+CarC -> CarM: modifyCar()
+CarM -> DB: Update Car Data
+DB --> CarM: Car Updated
+CarM --> CarC: Car Updated
+CarC --> Server: Success Response
+Server --> User: Car Updated
+
+User -> Server: DELETE /api/v1/cars/:id
+Server -> CarC: deleteCar()
+CarC -> CarM: removeCar()
+CarM -> DB: Delete Car Data
+DB --> CarM: Car Deleted
+CarM --> CarC: Car Deleted
+CarC --> Server: Success Response
+Server --> User: Car Deleted
+== Rent Management ==
+
+User -> Server: POST /api/v1/rents
+Server -> RentC: addRent()
+RentC -> RentM: saveRent()
+RentM -> DB: Insert Rent Data
+DB --> RentM: Rent Created
+RentM --> RentC: Rent Created
+RentC --> Server: Success Response
+Server --> User: Rent Created
+
+User -> Server: GET /api/v1/rents
+Server -> RentC: getAllRents()
+RentC -> RentM: fetchAllRents()
+RentM -> DB: Retrieve Rents Data
+DB --> RentM: Rents Data
+RentM --> RentC: Rents Data
+RentC --> Server: Rents Data
+Server --> User: Rents List
+
+User -> Server: GET /api/v1/rents/:id
+Server -> RentC: getRent()
+RentC -> RentM: fetchRent()
+RentM -> DB: Query Rent Data
+DB --> RentM: Rent Data
+RentM --> RentC: Rent Data
+RentC --> Server: Rent Data
+Server --> User: Rent Info
+
+User -> Server: PUT /api/v1/rents/:id
+Server -> RentC: updateRent()
+RentC -> RentM: modifyRent()
+RentM -> DB: Update Rent Data
+DB --> RentM: Rent Updated
+RentM --> RentC: Rent Updated
+RentC --> Server: Success Response
+Server --> User: Rent Updated
+
+User -> Server: DELETE /api/v1/rents/:id
+Server -> RentC: deleteRent()
+RentC -> RentM: removeRent()
+RentM -> DB: Delete Rent Data
+DB --> RentM: Rent Deleted
+RentM --> RentC: Rent Deleted
+RentC --> Server: Success Response
+Server --> User: Rent Deleted
+
+== Car Provider Management ==
+
+User -> Server: POST /api/v1/Car_Provider
+Server -> CPC: createCarProvider()
+CPC -> CPM: saveCarProvider()
+CPM -> DB: Insert Car Provider Data
+DB --> CPM: Provider Created
+CPM --> CPC: Provider Created
+CPC --> Server: Success Response
+Server --> User: Car Provider Added
+
+User -> Server: GET /api/v1/Car_Provider
+Server -> CPC: getAllCarProviders()
+CPC -> CPM: fetchAllCarProviders()
+CPM -> DB: Retrieve Providers Data
+DB --> CPM: Providers Data
+CPM --> CPC: Providers Data
+CPC --> Server: Providers Data
+Server --> User: Providers List
+
+User -> Server: GET /api/v1/Car_Provider/:id
+Server -> CPC: getCarProvider()
+CPC -> CPM: findCarProvider()
+CPM -> DB: Query Provider Data
+DB --> CPM: Provider Data
+CPM --> CPC: Provider Data
+CPC --> Server: Provider Data
+Server --> User: Provider Info
+
+User -> Server: PUT /api/v1/Car_Provider/:id
+Server -> CPC: updateCarProvider()
+CPC -> CPM: modifyCarProvider()
+CPM -> DB: Update Provider Data
+DB --> CPM: Provider Updated
+CPM --> CPC: Provider Updated
+CPC --> Server: Success Response
+Server --> User: Provider Updated
+
+User -> Server: DELETE /api/v1/Car_Provider/:id
+Server -> CPC: deleteCarProvider()
+CPC -> CPM: removeCarProvider()
+CPM -> DB: Delete Provider Data
+DB --> CPM: Provider Deleted
+CPM --> CPC: Provider Deleted
+CPC --> Server: Success Response
+Server --> User: Provider Deleted
+
+@enduml
