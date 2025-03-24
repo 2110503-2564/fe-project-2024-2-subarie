@@ -125,3 +125,76 @@ exports.logout = async (req, res, next) => {
         message: 'User logged out successfully'
     });
 };
+
+// @desc    Get all admin users
+// @route   GET /api/v1/auth/admins
+// @access  Private/Admin
+exports.getAdmins = async(req, res, next) => {
+    try {
+        // Find all users with role="admin"
+        const adminUsers = await User.find({ role: 'admin' }).select('-password');
+        
+        res.status(200).json({
+            success: true,
+            count: adminUsers.length,
+            data: adminUsers
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: 'Server Error'
+        });
+    }
+};
+
+// @desc    Delete admin user
+// @route   DELETE /api/v1/auth/admins/:id
+// @access  Private/Admin
+exports.deleteAdmin = async(req, res, next) => {
+    try {
+        // Find the user to ensure it's an admin
+        const user = await User.findById(req.params.id);
+        
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: `User not found with id ${req.params.id}`
+            });
+        }
+        
+        // Check if the user is an admin
+        if (user.role !== 'admin') {
+            return res.status(400).json({
+                success: false,
+                message: 'User is not an admin'
+            });
+        }
+        
+        // Prevent admin from deleting their own account
+        if (user._id.toString() === req.user.id) {
+            return res.status(400).json({
+                success: false,
+                message: 'Admin cannot delete their own account'
+            });
+        }
+        
+        // Delete any tokens associated with this user
+        await ValidToken.deleteMany({ token: { $regex: req.params.id } });
+        
+        // Delete the user
+        await User.findByIdAndDelete(req.params.id);
+        
+        res.status(200).json({
+            success: true,
+            data: {},
+            message: 'Admin deleted successfully'
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: 'Server Error'
+        });
+    }
+};
