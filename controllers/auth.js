@@ -198,3 +198,70 @@ exports.deleteAdmin = async(req, res, next) => {
         });
     }
 };
+
+exports.getUsers = async(req, res, next) => {
+    try {
+        // Find all users with role="admin"
+        const adminUsers = await User.find({ role: 'user' }).select('-password');
+        
+        res.status(200).json({
+            success: true,
+            count: adminUsers.length,
+            data: adminUsers
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: 'Server Error'
+        });
+    }
+};
+
+exports.deleteUser = async(req, res, next) => {
+    try {
+        // Find the user to ensure it's an admin
+        const user = await User.findById(req.params.id);
+        
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: `User not found with id ${req.params.id}`
+            });
+        }
+        
+        // Check if the user is an admin
+        if (user.role !== 'user') {
+            return res.status(400).json({
+                success: false,
+                message: 'User is not an user'
+            });
+        }
+        
+        // // Prevent admin from deleting their own account
+        // if (user._id.toString() === req.user.id) {
+        //     return res.status(400).json({
+        //         success: false,
+        //         message: 'Admin cannot delete their own account'
+        //     });
+        // }
+        
+        // Delete any tokens associated with this user
+        await ValidToken.deleteMany({ token: { $regex: req.params.id } });
+        
+        // Delete the user
+        await User.findByIdAndDelete(req.params.id);
+        
+        res.status(200).json({
+            success: true,
+            data: {},
+            message: 'User deleted successfully'
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: 'Server Error'
+        });
+    }
+};
