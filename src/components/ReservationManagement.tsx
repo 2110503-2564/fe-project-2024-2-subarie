@@ -577,6 +577,7 @@ export default function ReservationManagement({ token }: ReservationManagementPr
     switch (action) {
       case 'confirm':
         confirmReservation(reservationId); // Call the appropriate function
+
         break;
       case 'complete':
         completeReservation(reservationId);
@@ -587,8 +588,9 @@ export default function ReservationManagement({ token }: ReservationManagementPr
       case 'delete':
         deleteReservation(reservationId);
         break;
-        case 'edit' :
-          break;
+      case 'edit' :
+        router.push(`/account/reservations/${reservationId}`);
+        break;
       default:
         console.error('Unknown action:', action);
     }
