@@ -124,37 +124,37 @@ export default function ReservationDetailsPage({
 
 
 
-      const getcar = await fetch(`${API_BASE_URL}/rents/${params.reservationId}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${session.user.token}`,
-          'Content-Type': 'application/json'
-        }
-      } );
-      if (!getcar.ok) {
-        throw new Error('Failed to fetch car ID');
-      }
+      // const getcar = await fetch(`${API_BASE_URL}/rents/${params.reservationId}`, {
+      //   method: 'GET',
+      //   headers: {
+      //     'Authorization': `Bearer ${session.user.token}`,
+      //     'Content-Type': 'application/json'
+      //   }
+      // } );
+      // if (!getcar.ok) {
+      //   throw new Error('Failed to fetch car ID');
+      // }
   
-      const getCarData = await getcar.json();
-      const carId = getCarData.carId;
+      // const getCarData = await getcar.json();
+      // const carId = getCarData.carId;
   
-      console.log(`Car ID for reservation ${params.reservationId}: ${carId}`);
+      // console.log(`Car ID for reservation ${params.reservationId}: ${carId}`);
 
 
 
-        const upcar = await fetch(`${API_BASE_URL}/cars/${carId}`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${session.user.token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ available: true })
-        } );
+      //   const upcar = await fetch(`${API_BASE_URL}/cars/${carId}`, {
+      //     method: 'PUT',
+      //     headers: {
+      //       'Authorization': `Bearer ${session.user.token}`,
+      //       'Content-Type': 'application/json'
+      //     },
+      //     body: JSON.stringify({ available: true })
+      //   } );
   
-        if (!upcar.ok) {
-          const errorData = await upcar.json();
-          throw new Error(errorData.message || 'Failed to cancel reservation');
-        }
+      //   if (!upcar.ok) {
+      //     const errorData = await upcar.json();
+      //     throw new Error(errorData.message || 'Failed to cancel reservation');
+      //   }
 
 
 
