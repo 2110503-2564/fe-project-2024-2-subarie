@@ -4,22 +4,31 @@ const {
     getCarProvider, 
     createCarProvider, 
     updateCarProvider, 
-    deleteCarProvider 
+    deleteCarProvider,
+    registerProvider,
+    loginProvider,
+    getCurrentProvider,
+    logoutProvider 
 } = require('../controllers/Car_Provider');
 
 const router = express.Router();
 const { protect, authorize } = require('../middleware/auth');
-router.use(protect);
 
-router
-    .route('/')
+// Public routes
+router.post('/register', registerProvider);
+router.post('/login', loginProvider);
+router.get('/me', protect, getCurrentProvider);
+router.post('/logout', protect, logoutProvider);
+
+// Routes that use the root path
+router.route('/')
     .get(getCarProviders)
-    .post(authorize('admin'),createCarProvider);
+    .post(createCarProvider);
 
-router
-    .route('/:id')
+// Routes with ID parameter
+router.route('/:id')
     .get(getCarProvider)
-    .put(authorize('admin'),updateCarProvider)
-    .delete(authorize('admin'),deleteCarProvider);
+    .put(protect, authorize('admin'), updateCarProvider)
+    .delete(protect, authorize('admin'), deleteCarProvider);
 
 module.exports = router;
